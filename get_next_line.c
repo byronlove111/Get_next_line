@@ -9,16 +9,17 @@
 /*   Updated: 2024/11/25 13:10:51 by abbouras         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include "get_next_line.h"
 
-char	*get_next_line(int fd)
+static char	*get_next_line(int fd)
 {
 }
 
-int	find_size(int nb)
+static int	find_size(int nb)
 {
 }
 
-int	main(int ac, char **av)
-{
-	(void)ac;
-}
+// #include <stdio.h>
+// int	main(int ac, char **av)
+// {
+// }
