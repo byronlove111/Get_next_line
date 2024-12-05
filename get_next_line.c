@@ -66,6 +66,29 @@ static char	*fill_line_buffer(int fd, char *left_c, char *buffer)
 
 static char	*set_line(char *line_buffer)
 {
+	char	*line;
+	char	*remainder;
+	ssize_t	i;
+
+	i = 0;
+	if (!line_buffer[0])
+		return (NULL);
+	while (line_buffer[i] != '\n' && line_buffer[i] != '\0')
+		i++;
+	line = ft_substr(line_buffer, 0, i + 1);
+	if (!line)
+		return (NULL);
+	if (line_buffer[i] == '\n')
+	{
+		remainder = ft_strdup(line_buffer + i + 1);
+		free(line_buffer);
+		line_buffer = remainder;
+	}
+	else
+		remainder = NULL;
+	free(line_buffer);
+	line_buffer = remainder;
+	return (line);
 }
 
 static void	*ft_calloc(size_t elementCount, size_t elementSize)
@@ -87,10 +110,23 @@ static void	*ft_calloc(size_t elementCount, size_t elementSize)
 	return (ptr);
 }
 
-/*int	main(int ac, char **av)
+int main(void)
 {
-	int fd = open("file.txt", O_RDONLY);
-	if (fd == -1)
-		return (NULL);
-	
-}*/
+    int     fd;
+    char    *line;
+
+    fd = open("file.txt", O_RDONLY);
+    if (fd == -1)
+    {
+        printf("Erreur d'ouverture du fichier\n");
+        return (1);
+    }
+
+    while ((line = get_next_line(fd)) != NULL)
+    {
+        printf("%s", line);
+        free(line);
+    }
+    close(fd);
+    return (0);
+}
