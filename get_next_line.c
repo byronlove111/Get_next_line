@@ -9,49 +9,92 @@
 /*   Updated: 2024/11/25 13:10:51 by abbouras         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "get_next_line.h"
 #include <stdio.h>
+
+char	*read_line(int fd, char *buffer, char *stash);
+char	*clean_line(char *line, char **stash);
 
 char	*get_next_line(int fd)
 {
 	static char		*stash = NULL;
 	char			*buffer;
 	char			*line;
-	int				bytes_read;
+	char			*sub_line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
 		return (NULL);
-	bytes_read = read(fd, buffer, BUFFER_SIZE);
-	if (bytes_read <= 0)
+	line = read_line(fd, buffer, stash);
+	if (!line)
 	{
 		free(buffer);
 		return (NULL);
 	}
-	buffer[bytes_read] = '\0';
-	return (buffer);
+	sub_line = clean_line(line, &stash);
+	if (!sub_line)
+		return (NULL);
+	return (sub_line);
 }
-int main(void)
+
+char	*read_line(int fd, char *buffer, char *stash)
 {
-    int     fd;
-    char    *line;
+	int			bytes_read;
+	char		*line;
 
-    fd = open("file.txt", O_RDONLY);
-    if (fd == -1)
-    {
-        printf("Erreur d'ouverture du fichier\n");
-        return (1);
-    }
-
-	char *str = NULL;
-	while ((str = get_next_line(fd)) != NULL)
+	line = ft_strdup("");
+	if (stash)
+		line = ft_strjoin(stash, line);
+	bytes_read = 1;
+	while (bytes_read > 0)
 	{
-		printf("%s\n", str);
-		free(str);
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
+		if (bytes_read == 0)
+			return (NULL);
+		line = ft_strjoin(line, buffer);
+		if (!line)
+			return (NULL);
+		if (ft_strchr(buffer, '\n'))
+		{
+			free(buffer);
+			return (line);
+		}
 	}
-
-    close(fd);
-    return (0);
+	return (line);
 }
+
+char	*clean_line(char *line, char **stash)
+{
+	size_t	i;
+
+	i = 0;
+	while (line[i] != '\n' && line[i] != '\0')
+		i++;
+	*stash = ft_substr(line, i + 1, ft_strlen(line));
+	line = ft_substr(line, 0, i);
+	return (line);
+}
+
+// int main(void)
+// {
+// 	int     fd;
+// 	char    *line;
+
+// 	fd = open("file.txt", O_RDONLY);
+// 	if (fd == -1)
+// 	{
+// 	  printf("Erreur d'ouverture du fichier\n");
+// 	  return (1);
+// 	}
+// 	while ((line = get_next_line(fd)) != NULL)
+// 	{
+// 		printf("%s\n", line);
+// 		free(line); // Assurez-vous de libérer la mémoire allouée
+// 	}
+
+// 	close(fd);
+// 	return (0);
+// }
