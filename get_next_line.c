@@ -15,6 +15,7 @@
 
 char	*read_line(int fd, char *buffer, char *stash);
 char	*clean_line(char *line, char **stash);
+void	*ft_calloc(size_t elementCount, size_t elementSize);
 
 char	*get_next_line(int fd)
 {
@@ -25,13 +26,18 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	buffer = ft_calloc((BUFFER_SIZE + 1), sizeof(char));
 	if (!buffer)
 		return (NULL);
 	line = read_line(fd, buffer, stash);
 	if (!line)
 	{
 		free(buffer);
+		if (stash)
+		{
+			free(stash);
+			stash = NULL;
+		}
 		return (NULL);
 	}
 	sub_line = clean_line(line, &stash);
@@ -44,17 +50,28 @@ char	*read_line(int fd, char *buffer, char *stash)
 {
 	int			bytes_read;
 	char		*line;
+	char		*tmp;
 
 	line = ft_strdup("");
 	if (stash)
+	{
+		tmp = line;		
 		line = ft_strjoin(stash, line);
+		free(tmp);
+	}
 	bytes_read = 1;
 	while (bytes_read > 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		if (bytes_read == 0)
+		if (bytes_read <= 0)
+		{
+			free(line);
 			return (NULL);
+		}
+		buffer[bytes_read] = '\0';
+		tmp = line;
 		line = ft_strjoin(line, buffer);
+		free(tmp);
 		if (!line)
 			return (NULL);
 		if (ft_strchr(buffer, '\n'))
@@ -69,13 +86,37 @@ char	*read_line(int fd, char *buffer, char *stash)
 char	*clean_line(char *line, char **stash)
 {
 	size_t	i;
+	char		*new_line;
+	char		*new_stash;
 
 	i = 0;
 	while (line[i] != '\n' && line[i] != '\0')
 		i++;
-	*stash = ft_substr(line, i + 1, ft_strlen(line));
-	line = ft_substr(line, 0, i);
-	return (line);
+	new_stash = ft_substr(line, i + 1, ft_strlen(line));
+	new_line = ft_substr(line, 0, i);
+	free(line);
+	if (*stash)
+		free(*stash);
+	*stash = new_stash;
+	return (new_line);
+}
+void	*ft_calloc(size_t elementCount, size_t elementSize)
+{
+	unsigned char	*ptr;
+	size_t			i;
+
+	if (elementSize * elementCount > SIZE_MAX)
+		return (NULL);
+	ptr = malloc(elementSize * elementCount);
+	if (!ptr)
+		return (NULL);
+	i = 0;
+	while (i < (elementCount * elementSize))
+	{
+		ptr[i] = 0;
+		i++;
+	}
+	return (ptr);
 }
 
 // int main(void)
