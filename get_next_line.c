@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
 
 static char	*read_line(int fd, char *buffer, char *stash);
 static char	*clean_line(char *line, char **stash);
@@ -25,7 +24,7 @@ char	*get_next_line(int fd)
 	char			*line;
 	char			*sub_line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
 		return (NULL);
 	buffer = ft_calloc((BUFFER_SIZE + 1), sizeof(char));
 	if (!buffer)
@@ -77,7 +76,8 @@ static char	*read_line(int fd, char *buffer, char *stash)
 		line = ft_strjoin(stash, line);
 		free(tmp);
 	}
-	while (!ft_strchr(buffer, '\n'))
+	// TODO: fix la derniere ligne qui return NULL car pas de /n
+	while (!ft_strchr(line, '\n'))
 	{
 		line = read_buffer(fd, buffer, line);
 		if (!line)
@@ -124,11 +124,11 @@ void	*ft_calloc(size_t elementCount, size_t elementSize)
 	return (ptr);
 }
 
+// #include <stdio.h>
 // int main(void)
 // {
 // 	int     fd;
 // 	char    *line;
-
 // 	fd = open("file.txt", O_RDONLY);
 // 	if (fd == -1)
 // 	{
@@ -140,7 +140,6 @@ void	*ft_calloc(size_t elementCount, size_t elementSize)
 // 		printf("%s\n", line);
 // 		free(line);
 // 	}
-
 // 	close(fd);
 // 	return (0);
 // }
