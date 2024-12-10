@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_lines_utils.c                             :+:      :+:    :+:   */
+/*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abbouras <abbouras@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 11:55:19 by abbouras          #+#    #+#             */
-/*   Updated: 2024/11/25 11:55:20 by abbouras         ###   ########.fr       */
+/*   Updated: 2024/12/10 03:36:11 by abbouras         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,22 +57,6 @@ char	*ft_strchr(const char *s, int c)
 	if (u_c == '\0')
 		return ((char *)s);
 	return (NULL);
-}
-
-void	ft_bzero(void *s, size_t n)
-{
-	unsigned char	*ptr;
-	size_t			i;
-
-	i = 0;
-	ptr = s;
-	if (n == 0)
-		return ;
-	while (i < n)
-	{
-		ptr[i] = 0;
-		i++;
-	}
 }
 
 void	*ft_calloc(size_t elementCount, size_t elementSize)

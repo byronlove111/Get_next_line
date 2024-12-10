@@ -6,7 +6,7 @@
 /*   By: abbouras <abbouras@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 11:55:21 by abbouras          #+#    #+#             */
-/*   Updated: 2024/12/10 03:16:08 by abbouras         ###   ########.fr       */
+/*   Updated: 2024/12/10 03:36:44 by abbouras         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@
 
 size_t	ft_strlen(const char *s);
 char	*ft_strchr(const char *s, int c);
-void	ft_bzero(void *s, size_t n);
 void	*ft_calloc(size_t elementCount, size_t elementSize);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	*read_and_store_buffer(int fd, char *res);
