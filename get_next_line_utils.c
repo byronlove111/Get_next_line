@@ -12,6 +12,37 @@
 
 #include "get_next_line.h"
 
+size_t	ft_strlen(const char *s)
+{
+	size_t	i;
+
+	i = 0;
+	while (s[i])
+		i++;
+	return (i);
+}
+
+char	*ft_strjoin(char const *s1, char const *s2)
+{
+	size_t			size;
+	size_t			i;
+	char			*str;
+
+	if (!s1 || !s2)
+		return (NULL);
+	size = ft_strlen(s1) + ft_strlen(s2);
+	i = 0;
+	str = malloc(sizeof(char) * size + 1);
+	if (!str)
+		return (NULL);
+	while (*s1)
+		str[i++] = *s1++;
+	while (*s2)
+		str[i++] = *s2++;
+	str[i] = '\0';
+	return (str);
+}
+
 char	*ft_strchr(const char *s, int c)
 {
 	unsigned char	u_c;
@@ -28,79 +59,37 @@ char	*ft_strchr(const char *s, int c)
 	return (NULL);
 }
 
-size_t	ft_strlen(const char *s)
+void	ft_bzero(void *s, size_t n)
 {
-	size_t	i;
+	unsigned char	*ptr;
+	size_t			i;
 
 	i = 0;
-	while (s[i])
-		i++;
-	return (i);
-}
-
-char	*ft_strdup(const char *s)
-{
-	int		size;
-	int		i;
-	char	*str;
-
-	i = 0;
-	size = ft_strlen(s);
-	str = ft_calloc(size + 1, sizeof(char));
-	if (!str)
-		return (NULL);
-	while (s[i])
+	ptr = s;
+	if (n == 0)
+		return ;
+	while (i < n)
 	{
-		str[i] = s[i];
+		ptr[i] = 0;
 		i++;
 	}
-	str[i] = '\0';
-	return (str);
 }
 
-char	*ft_strjoin(char const *s1, char const *s2)
+void	*ft_calloc(size_t elementCount, size_t elementSize)
 {
-	size_t			size;
+	unsigned char	*ptr;
 	size_t			i;
-	char			*str;
 
-	if (!s1 || !s2)
+	if (elementSize * elementCount > SIZE_MAX)
 		return (NULL);
-	size = ft_strlen(s1) + ft_strlen(s2);
-	i = 0;
-	str = ft_calloc(size + 1, sizeof(char));
-	if (!str)
-		return (NULL);
-	while (*s1)
-		str[i++] = *s1++;
-	while (*s2)
-		str[i++] = *s2++;
-	str[i] = '\0';
-	return (str);
-}
-
-char	*ft_substr(char const *s, unsigned int start, size_t len)
-{
-	size_t			i;
-	size_t			s_len;
-	char			*substr;
-
-	if (!s)
-		return (NULL);
-	s_len = ft_strlen(s);
-	if (start >= s_len)
-		return (ft_strdup(""));
-	if (len > s_len - start)
-		len = s_len - start;
-	substr = ft_calloc(len + 1, sizeof(char));
-	if (!substr)
+	ptr = malloc(elementSize * elementCount);
+	if (!ptr)
 		return (NULL);
 	i = 0;
-	while (i < len)
+	while (i < (elementCount * elementSize))
 	{
-		substr[i] = s[start + i];
+		ptr[i] = 0;
 		i++;
 	}
-	substr[i] = '\0';
-	return (substr);
+	return (ptr);
 }
