@@ -30,7 +30,7 @@ char	*ft_strjoin(char const *s1, char const *s2);
 char	*read_and_store_buffer(int fd, char *res);
 char	*get_next_line(int fd);
 char	*extract_current_line(char *buffer);
-char	*extract_remaining_text(char *buffer);
+char	*extract_stash(char *buffer);
 char	*join_and_free(char *stash, char *buffer);
 
 #endif

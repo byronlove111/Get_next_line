@@ -13,11 +13,6 @@
 #include "get_next_line.h"
 #include <stdio.h>
 
-/* Cette fonction joint deux chaînes et libère la mémoire de stash
- * @param stash: La chaîne stockée précédemment
- * @param buffer: Le nouveau buffer à joindre
- * @return: La nouvelle chaîne jointe ou NULL en cas d'erreur
- */
 char	*join_and_free(char *stash, char *buffer)
 {
 	char	*joined_str;
@@ -32,11 +27,7 @@ char	*join_and_free(char *stash, char *buffer)
 	return (joined_str);
 }
 
-/* Extrait le texte restant après le premier \n
- * @param buffer: La chaîne contenant le texte complet
- * @return: Le texte après \n ou NULL s'il n'y a pas de \n
- */
-char	*extract_remaining_text(char *buffer)
+char	*extract_stash(char *buffer)
 {
 	int		newline_pos;
 	int		dest_index;
@@ -64,10 +55,6 @@ char	*extract_remaining_text(char *buffer)
 	return (remaining_text);
 }
 
-/* Extrait la ligne courante jusqu'au premier \n inclus
- * @param buffer: La chaîne contenant le texte
- * @return: La ligne extraite ou NULL si buffer est vide
- */
 char	*extract_current_line(char *buffer)
 {
 	char	*line;
@@ -96,10 +83,6 @@ char	*extract_current_line(char *buffer)
 	return (line);
 }
 
-/* Fonction principale qui retourne la prochaine ligne du fichier
- * @param fd: Le descripteur de fichier à lire
- * @return: La prochaine ligne du fichier ou NULL si fin de fichier/erreur
- */
 char	*read_and_store_buffer(int fd, char *stash)
 {
 	char	*buffer;
@@ -153,7 +136,7 @@ char	*get_next_line(int fd)
 		stash = NULL;
 		return (NULL);
 	}
-	stash = extract_remaining_text(stash);
+	stash = extract_stash(stash);
 	return (line);
 }
 
