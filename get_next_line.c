@@ -13,140 +13,169 @@
 #include "get_next_line.h"
 #include <stdio.h>
 
-char	*join_and_free(char *buffer, char *stash)
+/* Cette fonction joint deux chaînes et libère la mémoire de stash
+ * @param stash: La chaîne stockée précédemment
+ * @param buffer: Le nouveau buffer à joindre
+ * @return: La nouvelle chaîne jointe ou NULL en cas d'erreur
+ */
+char	*join_and_free(char *stash, char *buffer)
 {
-	char	*tmp;
+	char	*joined_str;
 
-	tmp = ft_strjoin(buffer, stash);
-	if (!tmp)
+	joined_str = ft_strjoin(stash, buffer);
+	if (!joined_str)
 	{
-		free(buffer);
+		free(stash);
 		return (NULL);
 	}
-	free(buffer);
-	return (tmp);
+	free(stash);
+	return (joined_str);
 }
 
+/* Extrait le texte restant après le premier \n
+ * @param buffer: La chaîne contenant le texte complet
+ * @return: Le texte après \n ou NULL s'il n'y a pas de \n
+ */
 char	*extract_remaining_text(char *buffer)
 {
-	int		i;
-	int		j;
-	char	*line;
+	int		newline_pos;
+	int		dest_index;
+	char	*remaining_text;
 
-	i = 0;
-	while (buffer[i] && buffer[i] != '\n')
-		i++;
-	if (!buffer[i])
+	newline_pos = 0;
+	while (buffer[newline_pos] && buffer[newline_pos] != '\n')
+		newline_pos++;
+	if (!buffer[newline_pos])
 	{
 		free(buffer);
 		return (NULL);
 	}
-	line = ft_calloc(ft_strlen(buffer) - i + 1, 1);
-	if (!line)
+	remaining_text = ft_calloc(ft_strlen(buffer) - newline_pos + 1, 1);
+	if (!remaining_text)
 	{
 		free(buffer);
 		return (NULL);
 	}
-	i++;
-	j = 0;
-	while (buffer[i])
-		line[j++] = buffer[i++];
+	newline_pos++;
+	dest_index = 0;
+	while (buffer[newline_pos])
+		remaining_text[dest_index++] = buffer[newline_pos++];
 	free(buffer);
-	return (line);
+	return (remaining_text);
 }
 
+/* Extrait la ligne courante jusqu'au premier \n inclus
+ * @param buffer: La chaîne contenant le texte
+ * @return: La ligne extraite ou NULL si buffer est vide
+ */
 char	*extract_current_line(char *buffer)
 {
 	char	*line;
-	int		i;
+	int		len;
+	int		has_newline;
 
-	i = 0;
 	if (!buffer[0])
 		return (NULL);
-	while (buffer[i] && buffer[i] != '\n')
-		i++;
-	line = ft_calloc(i + 2, 1);
+	len = 0;
+	has_newline = 0;
+	while (buffer[len] && buffer[len] != '\n')
+		len++;
+	if (buffer[len] == '\n')
+		has_newline = 1;
+	line = ft_calloc(len + has_newline + 1, 1);
 	if (!line)
 		return (NULL);
-	i = -1;
-	while (buffer[++i] && buffer[i] != '\n')
-		line[i] = buffer[i];
-	if (buffer[i] && buffer[i] == '\n')
-		line[i++] = '\n';
+	len = 0;
+	while (buffer[len] && buffer[len] != '\n')
+	{
+		line[len] = buffer[len];
+		len++;
+	}
+	if (has_newline)
+		line[len] = '\n';
 	return (line);
 }
 
-char	*read_and_store_buffer(int fd, char *res)
+/* Fonction principale qui retourne la prochaine ligne du fichier
+ * @param fd: Le descripteur de fichier à lire
+ * @return: La prochaine ligne du fichier ou NULL si fin de fichier/erreur
+ */
+char	*read_and_store_buffer(int fd, char *stash)
 {
 	char	*buffer;
-	int		byte_read;
+	int		bytes_read;
 
-	if (!res)
-		res = ft_calloc(1, 1);
-	byte_read = 1;
+	if (!stash)
+		stash = ft_calloc(1, 1);
+	bytes_read = 1;
 	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 	if (!buffer)
 		return (NULL);
-	while (byte_read > 0)
+	while (bytes_read > 0)
 	{
-		byte_read = read(fd, buffer, BUFFER_SIZE);
-		if (byte_read == -1)
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
+		if (bytes_read == -1)
 		{
 			free(buffer);
-			free(res);
+			free(stash);
 			return (NULL);
 		}
-		buffer[byte_read] = 0;
-		res = join_and_free(res, buffer);
-		if (ft_strchr(res, '\n'))
+		buffer[bytes_read] = 0;
+		stash = join_and_free(stash, buffer);
+		if (ft_strchr(stash, '\n'))
 			break ;
 	}
 	free(buffer);
-	return (res);
+	return (stash);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*buffer;
+	static char	*stash;
 	char		*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
 	{
-		if (buffer)
+		if (stash)
 		{
-			free(buffer);
-			buffer = NULL;
+			free(stash);
+			stash = NULL;
 		}
 		return (NULL);
 	}
-	buffer = read_and_store_buffer(fd, buffer);
-	if (!buffer)
+	stash = read_and_store_buffer(fd, stash);
+	if (!stash)
 		return (NULL);
-	line = extract_current_line(buffer);
+	line = extract_current_line(stash);
 	if (!line)
 	{
-		free(buffer);
-		buffer = NULL;
+		free(stash);
+		stash = NULL;
 		return (NULL);
 	}
-	buffer = extract_remaining_text(buffer);
+	stash = extract_remaining_text(stash);
 	return (line);
 }
 
-// int	main()
-// {
-// 	int	fd = open("test.txt", O_RDONLY, 1500);
-// 	char *str;
+/*#include <stdio.h>
+#include <fcntl.h>
 
-// 	// printf("%s", get_next_line(fd));
-// 	// printf("%s", get_next_line(fd));
-// 	// printf("%s", get_next_line(fd));
-// 	// printf("%s", get_next_line(fd));
-// 	// printf("%s", get_next_line(fd));
-// 	//printf("%s", get_next_line(fd));
-// 	while((str = get_next_line(fd)) != NULL)
-// 	{
-//         printf("%s", str);
-//         free(str);
-//     }
-// }
+int main(void)
+{
+	int fd;
+	char *line;
+
+	fd = open("test.txt", O_RDONLY);
+	if (fd == -1)
+	{
+		perror("Error opening file");
+		return (1);
+	}
+	while ((line = get_next_line(fd)) != NULL)
+	{
+		printf("%s", line);
+		free(line);
+	}
+	close(fd);
+	return (0);
+}*/
