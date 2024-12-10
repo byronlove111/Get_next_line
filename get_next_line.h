@@ -6,7 +6,7 @@
 /*   By: abbouras <abbouras@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 11:55:21 by abbouras          #+#    #+#             */
-/*   Updated: 2024/11/25 12:02:17 by abbouras         ###   ########.fr       */
+/*   Updated: 2024/12/10 03:16:08 by abbouras         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 # define GET_NEXT_LINE_H
 
 # include <fcntl.h>
-# include <stddef.h>
 # include <stdlib.h>
+# include <stdint.h> 
 # include <unistd.h>
 
 # ifndef BUFFER_SIZE
